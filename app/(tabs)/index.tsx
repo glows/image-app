@@ -1,74 +1,204 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import {
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import styled from 'styled-components/native';
+import Icon from 'react-native-vector-icons/Feather';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// Styled Components
+const Container = styled(SafeAreaView)`
+  flex: 1;
+  background-color: #f5f5f5;
+`;
 
-export default function HomeScreen() {
+const Header = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #fff;
+  border-bottom-width: 1px;
+  border-bottom-color: #eee;
+`;
+
+const HeaderTitle = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+`;
+
+const IconButton = styled(TouchableOpacity)`
+  padding: 8px;
+`;
+
+const MessagesContainer = styled.ScrollView`
+  flex: 1;
+  padding: 0 16px;
+`;
+
+const MessageRow = styled.View`
+  flex-direction: row;
+  justify-content: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+  margin: 4px 0;
+`;
+
+const MessageBubble = styled.View`
+  max-width: 80%;
+  padding: 12px;
+  border-radius: 16px;
+  background-color: ${props => props.isUser ? '#007AFF' : '#E9E9EB'};
+  ${props => props.isUser 
+    ? 'border-top-right-radius: 4px;' 
+    : 'border-top-left-radius: 4px;'}
+`;
+
+const MessageText = styled.Text`
+  font-size: 16px;
+  color: ${props => props.isUser ? '#fff' : '#000'};
+  line-height: 20px;
+`;
+
+const TimeStamp = styled.Text`
+  font-size: 12px;
+  margin-top: 4px;
+  color: ${props => props.isUser ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'};
+`;
+
+const InputContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #fff;
+  border-top-width: 1px;
+  border-top-color: #eee;
+`;
+
+const Input = styled.TextInput`
+  flex: 1;
+  height: 40px;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 0 16px;
+  margin-right: 8px;
+  font-size: 16px;
+  color: #000;
+`;
+
+const SendButton = styled(TouchableOpacity)`
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #007AFF;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+`;
+
+const ChatScreen = () => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: "Welcome back! Let's be creative!",
+      type: 'system',
+      timestamp: '19:14'
+    }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+
+  const handleSend = async () => {
+    if (inputText.trim()) {
+      // Add user message
+      const userMessage = {
+        id: messages.length + 1,
+        text: inputText,
+        type: 'user',
+        timestamp: new Date().toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: false 
+        })
+      };
+      setMessages([...messages, userMessage]);
+
+      // Call the API to generate the image
+      const imageUrl = await generateImage(inputText);
+      setGeneratedImage(imageUrl);
+      setInputText('');
+    }
+  };
+
+  const generateImage = async (prompt: string): Promise<string> => {
+    // Replace with your actual API call
+    const response = await fetch('https://your-api-endpoint/generateImage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await response.json();
+    return data.imageUrl; // Adjust based on your API response structure
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
-}
+    <Container>
+      <Header>
+        <IconButton>
+          <Icon name="chevron-left" size={24} color="#000" />
+        </IconButton>
+        <HeaderTitle>Image Journey</HeaderTitle>
+        <IconButton>
+          <Icon name="more-vertical" size={24} color="#000" />
+        </IconButton>
+      </Header>
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        style={{ flex: 1 }}
+      >
+        <MessagesContainer>
+          {messages.map((message) => (
+            <MessageRow key={message.id} isUser={message.type === 'user'}>
+              <MessageBubble isUser={message.type === 'user'}>
+                <MessageText isUser={message.type === 'user'}>
+                  {message.text}
+                </MessageText>
+                <TimeStamp isUser={message.type === 'user'}>
+                  {message.timestamp}
+                </TimeStamp>
+              </MessageBubble>
+            </MessageRow>
+          ))}
+          {generatedImage && (
+            <MessageRow isUser={false}>
+              <Image
+                source={{ uri: generatedImage }}
+                style={{ width: 200, height: 200, borderRadius: 10, margin: 4 }}
+              />
+            </MessageRow>
+          )}
+        </MessagesContainer>
+
+        <InputContainer>
+          <Input
+            value={inputText}
+            onChangeText={setInputText}
+            placeholder="What would you like to create?"
+            placeholderTextColor="#666"
+          />
+          <SendButton onPress={handleSend}>
+            <Icon name="send" size={20} color="#fff" />
+          </SendButton>
+        </InputContainer>
+      </KeyboardAvoidingView>
+    </Container>
+  );
+};
+
+export default ChatScreen;

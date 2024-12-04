@@ -1,109 +1,227 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import React from 'react';
+import { FlatList } from 'react-native';
+import styled from 'styled-components/native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+// Styled Components
+const Container = styled.ScrollView`
+  flex: 1;
+  background-color: #ffffff;
+`;
 
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+const ContentContainer = styled.View`
+  padding: 16px;
+`;
+
+const GoalCard = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 8px;
+  elevation: 3;
+`;
+
+const GoalCircle = styled.View`
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border-width: 2px;
+  border-color: #e0e0e0;
+  margin-right: 12px;
+`;
+
+const GoalContent = styled.View`
+  flex: 1;
+`;
+
+const GoalLabel = styled.Text`
+  color: #666;
+  font-size: 14px;
+`;
+
+const GoalText = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+`;
+
+const SectionHeader = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  margin-bottom: 16px;
+`;
+
+const SectionTitle = styled.Text`
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+`;
+
+const MoreButton = styled.Text`
+  font-size: 20px;
+  color: #666;
+`;
+
+const ArticleCard = styled.TouchableOpacity`
+  width: 300px;
+  margin-right: 16px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  elevation: 2;
+`;
+
+const ArticleImage = styled.Image`
+  width: 100%;
+  height: 160px;
+`;
+
+const ArticleContent = styled.View`
+  padding: 12px;
+`;
+
+const ArticleAuthor = styled.Text`
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 4px;
+`;
+
+const ArticleTitle = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+`;
+
+const TopPicksSection = styled.View`
+  margin-top: 24px;
+`;
+
+const TopPickCard = styled.TouchableOpacity`
+  width: 300px;
+  margin-right: 16px;
+`;
+
+const TopPickTitle = styled.Text`
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 8px;
+  padding: 0 16px;
+`;
+
+const TopPickImage = styled.Image`
+  width: 300px;
+  height: 200px;
+  border-radius: 12px;
+`;
+
+const ReadingApp = () => {
+  const inboxArticles = [
+    {
+      id: '1',
+      author: 'Tyler Cowen',
+      title: 'The end of oil?',
+      image: '/api/placeholder/300/160'
+    },
+    {
+      id: '2',
+      author: 'Heather Cox Richardson',
+      title: 'December 3, 2024',
+      image: '/api/placeholder/300/160'
+    },
+    {
+      id: '3',
+      author: 'Sam Altman',
+      title: 'Building the Future',
+      image: '/api/placeholder/300/160'
+    }
+  ];
+
+  const topPicks = [
+    {
+      id: '1',
+      title: 'Narrative Violation',
+      image: '/api/placeholder/300/200'
+    },
+    {
+      id: '2',
+      title: 'Becoming a Jedi',
+      image: '/api/placeholder/300/200'
+    }
+  ];
+
+  const renderArticleCard = ({ item }) => (
+    <ArticleCard>
+      <ArticleImage source={{ uri: item.image }} resizeMode="cover" />
+      <ArticleContent>
+        <ArticleAuthor>{item.author}</ArticleAuthor>
+        <ArticleTitle>{item.title}</ArticleTitle>
+      </ArticleContent>
+    </ArticleCard>
   );
-}
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+  const renderTopPick = ({ item }) => (
+    <TopPickCard>
+      <TopPickImage source={{ uri: item.image }} resizeMode="cover" />
+    </TopPickCard>
+  );
+
+  return (
+    <>
+      <Container>
+        <ContentContainer>
+          <GoalCard>
+            <GoalCircle />
+            <GoalContent>
+              <GoalLabel>Today's Goal</GoalLabel>
+              <GoalText>Read 5 minutes</GoalText>
+            </GoalContent>
+          </GoalCard>
+        </ContentContainer>
+
+        <SectionHeader>
+          <SectionTitle>Inbox</SectionTitle>
+          <MoreButton>•••</MoreButton>
+        </SectionHeader>
+
+        <FlatList
+          data={inboxArticles}
+          renderItem={renderArticleCard}
+          keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
+        />
+
+        <TopPicksSection>
+          <SectionTitle style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+            Top Picks
+          </SectionTitle>
+          <TopPickTitle>Narrative Violation</TopPickTitle>
+          <FlatList
+            data={topPicks}
+            renderItem={renderTopPick}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+          />
+        </TopPicksSection>
+      </Container>
+
+
+    </>
+  );
+};
+
+export default ReadingApp;

@@ -1,11 +1,18 @@
-import React from 'react';
-import { FlatList } from 'react-native';
-import styled from 'styled-components/native';
+import React from "react";
+import { FlatList, Image, StyleSheet, SafeAreaView } from "react-native";
+import styled from "styled-components/native";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 // Styled Components
-const Container = styled.ScrollView`
+// const Container = styled.ScrollView`
+//   flex: 1;
+//   background-color: #ffffff;
+// `;
+
+const Container = styled(SafeAreaView)`
   flex: 1;
-  background-color: #ffffff;
+  background-color: #f5f5f5;
 `;
 
 const ContentContainer = styled.View`
@@ -128,36 +135,36 @@ const TopPickImage = styled.Image`
 const ReadingApp = () => {
   const inboxArticles = [
     {
-      id: '1',
-      author: 'Tyler Cowen',
-      title: 'The end of oil?',
-      image: '/api/placeholder/300/160'
+      id: "1",
+      author: "Tyler Cowen",
+      title: "The end of oil?",
+      image: "/api/placeholder/300/160",
     },
     {
-      id: '2',
-      author: 'Heather Cox Richardson',
-      title: 'December 3, 2024',
-      image: '/api/placeholder/300/160'
+      id: "2",
+      author: "Heather Cox Richardson",
+      title: "December 3, 2024",
+      image: "/api/placeholder/300/160",
     },
     {
-      id: '3',
-      author: 'Sam Altman',
-      title: 'Building the Future',
-      image: '/api/placeholder/300/160'
-    }
+      id: "3",
+      author: "Sam Altman",
+      title: "Building the Future",
+      image: "/api/placeholder/300/160",
+    },
   ];
 
   const topPicks = [
     {
-      id: '1',
-      title: 'Narrative Violation',
-      image: '/api/placeholder/300/200'
+      id: "1",
+      title: "Narrative Violation",
+      image: "/api/placeholder/300/200",
     },
     {
-      id: '2',
-      title: 'Becoming a Jedi',
-      image: '/api/placeholder/300/200'
-    }
+      id: "2",
+      title: "Becoming a Jedi",
+      image: "/api/placeholder/300/200",
+    },
   ];
 
   const renderArticleCard = ({ item }) => (
@@ -177,7 +184,8 @@ const ReadingApp = () => {
   );
 
   return (
-    <>
+    <Container
+    >
       <Container>
         <ContentContainer>
           <GoalCard>
@@ -197,7 +205,7 @@ const ReadingApp = () => {
         <FlatList
           data={inboxArticles}
           renderItem={renderArticleCard}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
@@ -211,17 +219,28 @@ const ReadingApp = () => {
           <FlatList
             data={topPicks}
             renderItem={renderTopPick}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 16 }}
           />
         </TopPicksSection>
       </Container>
-
-
-    </>
+    </Container>
   );
 };
 
 export default ReadingApp;
+
+const styles = StyleSheet.create({
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+});

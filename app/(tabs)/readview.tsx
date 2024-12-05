@@ -5,6 +5,7 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  SafeAreaView
 } from 'react-native';
 import styled from 'styled-components/native';
 import { ChevronLeft, Star, MoreHorizontal, Share2, Trash2 } from 'lucide-react-native';
@@ -13,22 +14,20 @@ const HEADER_HEIGHT = 60;
 const { width } = Dimensions.get('window');
 
 // Styled Components
-const Container = styled.View`
+const Container = styled(SafeAreaView)`
   flex: 1;
-  background-color: #fff9f9;
+  background-color: #f5f5f5;
 `;
 
+
 const Header = styled(Animated.View)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: ${HEADER_HEIGHT}px;
   background-color: #fff9f9;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 16px;
+  padding-top: ${Platform.OS === 'ios' ? 20 : 0}px;
   z-index: 1000;
 `;
 

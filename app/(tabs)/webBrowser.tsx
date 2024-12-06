@@ -4,12 +4,14 @@ import styled from "styled-components/native";
 import { fetchTopStories, fetchStory } from '@/scripts/api/hackerNewsApi';
 import StoryItem from '../components/StoryItem';
 import { Story } from '@/app/components/storyTypes';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+
 
 const HomeScreen = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
+  const router = useRouter();
+  
 
   useEffect(() => {
     loadStories();
@@ -37,6 +39,13 @@ const HomeScreen = () => {
     );
   }
 
+  const onStoryItemPress = (item: any) => {
+    console.log('Story pressed!');
+    console.log('Navigating to Story with ID:', item);
+    router.push(`/Story`)
+
+  };
+
   return (
     <Container>
       <FlatList
@@ -45,7 +54,7 @@ const HomeScreen = () => {
         renderItem={({ item }) => (
           <StoryItem
             story={item}
-            onPress={() => navigation.navigate('Story', { story: item })}
+            onPress={() => onStoryItemPress(item)}
           />
         )}
         refreshing={loading}

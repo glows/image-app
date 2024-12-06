@@ -1,204 +1,246 @@
-import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import styled from 'styled-components/native';
-import Icon from 'react-native-vector-icons/Feather';
+import React from "react";
+import { FlatList, Image, StyleSheet, SafeAreaView } from "react-native";
+import styled from "styled-components/native";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 // Styled Components
+// const Container = styled.ScrollView`
+//   flex: 1;
+//   background-color: #ffffff;
+// `;
+
 const Container = styled(SafeAreaView)`
   flex: 1;
   background-color: #f5f5f5;
 `;
 
-const Header = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background-color: #fff;
-  border-bottom-width: 1px;
-  border-bottom-color: #eee;
+const ContentContainer = styled.View`
+  padding: 16px;
 `;
 
-const HeaderTitle = styled.Text`
+const GoalCard = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 8px;
+  elevation: 3;
+`;
+
+const GoalCircle = styled.View`
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border-width: 2px;
+  border-color: #e0e0e0;
+  margin-right: 12px;
+`;
+
+const GoalContent = styled.View`
+  flex: 1;
+`;
+
+const GoalLabel = styled.Text`
+  color: #666;
+  font-size: 14px;
+`;
+
+const GoalText = styled.Text`
   font-size: 18px;
   font-weight: 600;
   color: #000;
 `;
 
-const IconButton = styled(TouchableOpacity)`
-  padding: 8px;
-`;
-
-const MessagesContainer = styled.ScrollView`
-  flex: 1;
-  padding: 0 16px;
-`;
-
-const MessageRow = styled.View`
+const SectionHeader = styled.View`
   flex-direction: row;
-  justify-content: ${props => props.isUser ? 'flex-end' : 'flex-start'};
-  margin: 4px 0;
-`;
-
-const MessageBubble = styled.View`
-  max-width: 80%;
-  padding: 12px;
-  border-radius: 16px;
-  background-color: ${props => props.isUser ? '#007AFF' : '#E9E9EB'};
-  ${props => props.isUser 
-    ? 'border-top-right-radius: 4px;' 
-    : 'border-top-left-radius: 4px;'}
-`;
-
-const MessageText = styled.Text`
-  font-size: 16px;
-  color: ${props => props.isUser ? '#fff' : '#000'};
-  line-height: 20px;
-`;
-
-const TimeStamp = styled.Text`
-  font-size: 12px;
-  margin-top: 4px;
-  color: ${props => props.isUser ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'};
-`;
-
-const InputContainer = styled.View`
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  background-color: #fff;
-  border-top-width: 1px;
-  border-top-color: #eee;
+  padding: 0 16px;
+  margin-bottom: 16px;
 `;
 
-const Input = styled.TextInput`
-  flex: 1;
-  height: 40px;
-  background-color: #f0f0f0;
-  border-radius: 20px;
-  padding: 0 16px;
-  margin-right: 8px;
-  font-size: 16px;
+const SectionTitle = styled.Text`
+  font-size: 24px;
+  font-weight: bold;
   color: #000;
 `;
 
-const SendButton = styled(TouchableOpacity)`
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background-color: #007AFF;
-  align-items: center;
-  justify-content: center;
-  margin-left: 4px;
+const MoreButton = styled.Text`
+  font-size: 20px;
+  color: #666;
 `;
 
-const ChatScreen = () => {
-  const [messages, setMessages] = useState([
+const ArticleCard = styled.TouchableOpacity`
+  width: 300px;
+  margin-right: 16px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  elevation: 2;
+`;
+
+const ArticleImage = styled.Image`
+  width: 100%;
+  height: 160px;
+`;
+
+const ArticleContent = styled.View`
+  padding: 12px;
+`;
+
+const ArticleAuthor = styled.Text`
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 4px;
+`;
+
+const ArticleTitle = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+`;
+
+const TopPicksSection = styled.View`
+  margin-top: 24px;
+`;
+
+const TopPickCard = styled.TouchableOpacity`
+  width: 300px;
+  margin-right: 16px;
+`;
+
+const TopPickTitle = styled.Text`
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 8px;
+  padding: 0 16px;
+`;
+
+const TopPickImage = styled.Image`
+  width: 300px;
+  height: 200px;
+  border-radius: 12px;
+`;
+
+const ReadingApp = () => {
+  const inboxArticles = [
     {
-      id: 1,
-      text: "Welcome back! Let's be creative!",
-      type: 'system',
-      timestamp: '19:14'
-    }
-  ]);
-  const [inputText, setInputText] = useState('');
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+      id: "1",
+      author: "Tyler Cowen",
+      title: "The end of oil?",
+      image: "/api/placeholder/300/160",
+    },
+    {
+      id: "2",
+      author: "Heather Cox Richardson",
+      title: "December 3, 2024",
+      image: "/api/placeholder/300/160",
+    },
+    {
+      id: "3",
+      author: "Sam Altman",
+      title: "Building the Future",
+      image: "/api/placeholder/300/160",
+    },
+  ];
 
-  const handleSend = async () => {
-    if (inputText.trim()) {
-      // Add user message
-      const userMessage = {
-        id: messages.length + 1,
-        text: inputText,
-        type: 'user',
-        timestamp: new Date().toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: false 
-        })
-      };
-      setMessages([...messages, userMessage]);
+  const topPicks = [
+    {
+      id: "1",
+      title: "Narrative Violation",
+      image: "/api/placeholder/300/200",
+    },
+    {
+      id: "2",
+      title: "Becoming a Jedi",
+      image: "/api/placeholder/300/200",
+    },
+  ];
 
-      // Call the API to generate the image
-      const imageUrl = await generateImage(inputText);
-      setGeneratedImage(imageUrl);
-      setInputText('');
-    }
-  };
+  const renderArticleCard = ({ item }) => (
+    <ArticleCard>
+      <ArticleImage source={{ uri: item.image }} resizeMode="cover" />
+      <ArticleContent>
+        <ArticleAuthor>{item.author}</ArticleAuthor>
+        <ArticleTitle>{item.title}</ArticleTitle>
+      </ArticleContent>
+    </ArticleCard>
+  );
 
-  const generateImage = async (prompt: string): Promise<string> => {
-    // Replace with your actual API call
-    const response = await fetch('https://your-api-endpoint/generateImage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ prompt }),
-    });
-    const data = await response.json();
-    return data.imageUrl; // Adjust based on your API response structure
-  };
+  const renderTopPick = ({ item }) => (
+    <TopPickCard>
+      <TopPickImage source={{ uri: item.image }} resizeMode="cover" />
+    </TopPickCard>
+  );
 
   return (
-    <Container>
-      <Header>
-        <IconButton>
-          <Icon name="chevron-left" size={24} color="#000" />
-        </IconButton>
-        <HeaderTitle>Image Journey</HeaderTitle>
-        <IconButton>
-          <Icon name="more-vertical" size={24} color="#000" />
-        </IconButton>
-      </Header>
+    <Container
+    >
+      <Container>
+        <ContentContainer>
+          <GoalCard>
+            <GoalCircle />
+            <GoalContent>
+              <GoalLabel>Today's Goal</GoalLabel>
+              <GoalText>Read 5 minutes</GoalText>
+            </GoalContent>
+          </GoalCard>
+        </ContentContainer>
 
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-        style={{ flex: 1 }}
-      >
-        <MessagesContainer>
-          {messages.map((message) => (
-            <MessageRow key={message.id} isUser={message.type === 'user'}>
-              <MessageBubble isUser={message.type === 'user'}>
-                <MessageText isUser={message.type === 'user'}>
-                  {message.text}
-                </MessageText>
-                <TimeStamp isUser={message.type === 'user'}>
-                  {message.timestamp}
-                </TimeStamp>
-              </MessageBubble>
-            </MessageRow>
-          ))}
-          {generatedImage && (
-            <MessageRow isUser={false}>
-              <Image
-                source={{ uri: generatedImage }}
-                style={{ width: 200, height: 200, borderRadius: 10, margin: 4 }}
-              />
-            </MessageRow>
-          )}
-        </MessagesContainer>
+        <SectionHeader>
+          <SectionTitle>Inbox</SectionTitle>
+          <MoreButton>•••</MoreButton>
+        </SectionHeader>
 
-        <InputContainer>
-          <Input
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="What would you like to create?"
-            placeholderTextColor="#666"
+        <FlatList
+          data={inboxArticles}
+          renderItem={renderArticleCard}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
+        />
+
+        <TopPicksSection>
+          <SectionTitle style={{ paddingHorizontal: 16, marginBottom: 16 }}>
+            Top Picks
+          </SectionTitle>
+          <TopPickTitle>Narrative Violation</TopPickTitle>
+          <FlatList
+            data={topPicks}
+            renderItem={renderTopPick}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
           />
-          <SendButton onPress={handleSend}>
-            <Icon name="send" size={20} color="#fff" />
-          </SendButton>
-        </InputContainer>
-      </KeyboardAvoidingView>
+        </TopPicksSection>
+      </Container>
     </Container>
   );
 };
 
-export default ChatScreen;
+export default ReadingApp;
+
+const styles = StyleSheet.create({
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+});
